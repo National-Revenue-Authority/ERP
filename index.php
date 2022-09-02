@@ -25,7 +25,7 @@
             <div class="container">
                 <div class="row main">
                     <div class="col-md-8 parent">
-                        <center><img src="img/nralogo.svg" class="signin-logo" alt=""></center>
+                        <center><img src="assets/img/nralogo.svg" class="signin-logo" alt=""></center>
                         <h3 class="font-weight-bold text-muted text-center pb-3 pt-2">National Revenue Authority</h1>
                         <p class="text-center">To sign in, please select and enter your credentials</p>
 
