@@ -14,12 +14,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;800;900&display=swap" rel="stylesheet">
     
     <title>National Revenue Authority</title>
-    <link rel="stylesheet" type="text/css" href="css/styles.css?v=<?php echo time();?>">
+    <link rel="stylesheet" type="text/css" href="assets/css/styles.css?v=<?php echo time();?>">
 </head>
 
 <body>
     <header class="header-bg">
-        <a href="corporate-service.php"><img src="img/nralogo.svg" class="navbar-logo" alt=""></a>
+        <a href="corporate-service.php"><img src="assets/img/nralogo.svg" class="navbar-logo" alt=""></a>
         <nav>   
             <ul class="nav-links">
                 <li><a href='corporate-service.php' class="active">Dashboard</a></li>
@@ -53,9 +53,9 @@
         <div class="col-10">
             <div class="row">
                 <div class="appointment-form">
-                    <form action="connection/signup.inc.php" method="post">
+                    <form action="includes/register.inc.php" method="POST">
                         <div class="row">
-                            <h3 class="admin-header">Create an Account</h1>
+                            <h3 class="admin-header">Register an Account</h1>
                             <h6 class="">Please make sure you use a strong password</h6>
                             <div class="form-group col-6">
                                 <label for="">First Name</label>
@@ -68,33 +68,46 @@
                             <div class="form-group col-6">
                                 <label for="">Email</label>
                                 <input type="text" class="form-control" placeholder="you@example.com" name="email"/>
-                                <p>We'll never share your email with anyone else</p>
+                                <!-- <p>We'll never share your email with anyone else</p> -->
                             </div>
                             <div class="form-group col-6">
-                                <label for="">Phone</label>
-                                <input type="text" class="form-control" placeholder="9xxxxxxxx" name="phone"/>
-                                <p>We'll never share your number with anyone else</p>
+                                <label for="">Username</label>
+                                <input type="text" class="form-control" placeholder="Username" name="username"/>
+                                <!-- <p>We'll never share your number with anyone else</p> -->
+                            </div>
+                            
+                            <div class="form-group col-6">
+                                <label for="">Division</label>
+                                <select name="division" id="division" class="form-select">
+                                    <option value="0">Select Division</option>
+                                    <option value="customs">Customs</option>
+                                    <option value="corporate_service">Corporate Service</option>
+                                    <option value="domestic_tax">Domestic Tax</option>
+                                    <option value="internal_audit">Internal Audit</option>
+                                    <option value="internal_affairs">Internal Affairs</option>
+                                </select>
                             </div>
                             <div class="form-group col-6">
                                 <label for="">Password</label>
-                                <input type="password" class="form-control" placeholder="Enter your password" name="password"/>
+                                <input type="password" class="form-control" placeholder="Enter your password" name="passcode"/>
                                 <p>Mininum of 8 characters (e.g. Nura2@#a!)</p>
                             </div>
                             <div class="form-group col-6">
                                 <label for="">Confirm Password</label>
                                 <input type="password" class="form-control" placeholder="Confirm your password" name="cpassword"/>
+                                <p>Re-type the password. </p>
                             </div>
 
-                            <input type="submit" class="appointment-btn" name="submit" value="Sign Up"/>
-                            <p class="privacy-policy">By Creating Account, you accepted NRA <a href="">Terms of Use</a></p>
-                            <p class="privacy-policy">Have an Account? <a href="login.php">Sign In</a></p>
+                            <input type="submit" class="appointment-btn" name="submit" value="Register User"/>
+                            <!-- <p class="privacy-policy">By Creating Account, you accepted NRA <a href="">Terms of Use</a></p>
+                            <p class="privacy-policy">Have an Account? <a href="login.php">Sign In</a></p> -->
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    <footer class="text-center">Copyright &copy National Revenue Authority - Republic of South Sudan 2021. All Rights Reserved | 
+    <footer class="text-center">Copyright &copy National Revenue Authority - Republic of South Sudan <script>document.write(new Date().getFullYear())</script>. All Rights Reserved | 
         <a href="">Privacy Policy.</a>
     </footer>
 

@@ -1,5 +1,5 @@
 	<footer class="text-center">
-		Copyright &copy National Revenue Authority - Republic of South Sudan 2021. All Rights Reserved | 
+		Copyright &copy National Revenue Authority - Republic of South Sudan <script>document.write(new Date().getFullYear())</script>. All Rights Reserved | 
 		<a href="">Privacy Policy.</a>
 	</footer>
 	<script type = "text/javascript">

@@ -1,36 +1,63 @@
 <?php
-    include("connect.php"); 
-    error_reporting(0); 
-    session_start(); 
 
-    if(isset($_POST['submit'])) {
-        $fname = $_POST['fname'];
-        $email = $_POST['email'];  
-        $password = $_POST['password'];
-        
-        if (empty($email) || empty($password)) {
-            header("Location: ../login.php?error=emptyfields");
-            exit();
+    // session_start();
+    
+    include_once "config.php";
+    
+    if (isset($_GET['q']))  {
+        if ($_GET['q'] == 'sessionexpired') {
+            echo("
+                <div class='alert alert-warning'>
+                    <h3>Login to continue</h3>
+                    <a href='../login'> Login </a>
+                </div>
+            ");
         }
-        else {
-            $check_firstname= mysqli_query($db, "SELECT fname FROM employees WHERE fname='".$_POST['fname']."' ");
-            $check_email = mysqli_query($db, "SELECT email FROM employees WHERE email='".$_POST['email']."' ");
+    }
 
-        if(!empty($_POST["submit"])) {
-            $loginquery ="SELECT * FROM employees WHERE fname='fname' OR email='$email' && password='".md5($password)."'";
-            $result=mysqli_query($db, $loginquery); 
-            $row=mysqli_fetch_array($result);
-        
-        if(is_array($row)) {
-            $_SESSION["user_id"] = $row['adm_id'];
-            $_SESSION["fname"] = $row['fname'];
-            $_SESSION["email"] = $_POST['email']; 
-            header("Location: ../divisions.php?login=success"); 
-            } 
-        else {
-            $message = "Invalid Email or Password"; 
-            header("Location: ../login.php?loginfailed=wrongemail&password"); 
+
+    if (isset($_POST['submit'])) {
+	    
+        $username = mysqli_real_escape_string($conn, $_POST['username']);
+        $password = mysqli_real_escape_string($conn, $_POST['passcode']);
+        $division = mysqli_real_escape_string($conn, $_POST['division']);
+    
+        //Error handling
+        //checking if inputs are empty
+    
+        if (empty($username) || empty($password)) {
+            header("Location: ../login.php?login=empty");
+            exit();
+        } else {
+            $sql = "SELECT * FROM users WHERE username = '$username'";
+            $result = mysqli_query($conn, $sql);
+            $resultCheck = mysqli_num_rows($result);
+            
+            if ($resultCheck < 1) {
+                header("Location: ../login.php?login=error");
+                exit();
+            } else {
+                if ($row = mysqli_fetch_assoc($result)) {
+                    //de-hashing the password
+    
+                    $hashedPwdCheck = password_verify($password, $row['passcode']);
+                    if ($hashedPwdCheck == false) {
+                        header("Location: ../login.php?login=mismatch");
+                        exit();
+                    } elseif ($hashedPwdCheck == true) {
+                        //login the user
+
+                        setcookie("username", base64_encode($username), time()+3600, "/", "", 0);
+                        setcookie("division", base64_encode($division), time()+3600, "/", "", 0);
+    
+                        header("Location: ../index.php?division={$division}");
+                        exit();
+                    }
                 }
             }
         }
+    } else {
+        header("Location: ../login.php");
+        exit();
     }
+    
