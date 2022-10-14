@@ -62,6 +62,33 @@
                         
                         <button class="act" data-bs-toggle="modal" data-bs-target="#affairs"> Internal Affairs</button> -->
 
+                        <?php 
+                            $fullUrl = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+
+                            if (strpos($fullUrl, 'login=empty')) {
+                                echo "
+                                    <div class='alert alert-danger' role='alert'>
+                                        You did not fill in all the fields!
+                                    </div>
+                                ";
+                                exit();
+                            } elseif (strpos($fullUrl, 'login=mismatch')) {
+                                echo "
+                                    <div class='alert alert-danger' role='alert'>
+                                    The username or password do not match, please try again!
+                                    </div>
+                                ";
+                                exit();
+                            } elseif (strpos($fullUrl, 'login=error')) {
+                                echo "
+                                    <div class='alert alert-danger' role='alert'>
+                                        There was an error, please try again!
+                                    </div>
+                                ";
+                                exit();
+                            }
+                        ?>
+
                         <p class="privacy-policy pt-4 text-center">By signing in, you agree to NRA system <a href="">Terms of Use</a></p>
                     </div>
                 </div>

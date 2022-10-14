@@ -1,4 +1,29 @@
-<?php include 'layout.php' ?>
+<?php 
+
+// ini_set('display_errors', 1);
+// error_reporting(-1);
+
+    include 'layout.php';
+    include 'includes/config.php';
+
+    if (isset($_GET['page'])) {
+        $page = $_GET['page'];
+    } else {
+        $page = 1;
+    }
+
+    $records_per_page = 10;
+    $offset = ($page-1) * $records_per_page;
+
+    $total_pages_sql = "SELECT COUNT(*) FROM tbl_employees";
+    $result = mysqli_query($conn, $total_pages_sql);
+    $rows = mysqli_fetch_array($result)[0];
+    $total_pages = ceil($rows / $records_per_page);
+
+    $sql = "SELECT * FROM tbl_employees LIMIT $offset, $records_per_page";
+    $employees = mysqli_query($conn, $sql);
+
+?>
 
 <?php if (section == ''): ?>
 
@@ -120,32 +145,52 @@
                         </div>
                     </form>
                     
-                    <a href="index.php?division=corporate_service&section=csd-employees&action=employee-form"><button style="padding:5px 50px;border:none;background:rgb(24, 133, 184);border-radius:3px;color:#fff;margin:10px 90px">Add</button></a>
+                    <a href="index.php?division=corporate_service&section=csd-employees&action=add-employee"><button style="padding:5px 50px;border:none;background:rgb(24, 133, 184);border-radius:3px;color:#fff;margin:10px 90px">Add</button></a>
                 </div>
 
                 <div class="col-12">
                     <div class="row">
-                        <div class="col-6" style="background:#fff;box-shadow: 5px 5px 5px #d9d9d9;font-size:13px;margin-bottom:5px;border-right:2px solid #bebebe">
-                            <img src="img/bg.svg" alt="" style="height:100px;width:100px;float:left;border-radius:5px;margin-top:8px;margin-right:10px;margin-left:40px">
-                            <h6 style="font-size:12px;padding-top:10px">Jane Doe</h6>
-                            <p>IT Officer<br><span style="border-left:5px solid orange;padding-left:10px">Department ICT, Division Headquarters</span><br><img src="img/email.png" alt="" style="width:20px;height:20px"> jane@gmail.com<br><img src="img/phones.png" alt="" style="width:20px;height:20px"> +211 (0) 9211 292 229<a href="#" style="float:right;padding-right:25px">Profile</a></p>
-                        </div>
+                        
+                        <?php foreach ($employees as $emp): ?>
 
-                        <div class="col-6" style="background:#fff;box-shadow: 5px 5px 5px #d9d9d9;font-size:13px;margin-bottom:5px;border-right:2px solid #bebebe">
-                            <img src="img/bg.svg" alt="" style="height:100px;width:100px;float:left;border-radius:5px;margin-top:8px;margin-right:10px;margin-left:40px">
-                            <h6 style="font-size:12px;padding-top:10px">Jane Doe</h6>
-                            <p>IT Officer<br><span style="border-left:5px solid orange;padding-left:10px">Department ICT, Division Headquarters</span><br><img src="img/email.png" alt="" style="width:20px;height:20px"> jane@gmail.com<br><img src="img/phones.png" alt="" style="width:20px;height:20px"> +211 (0) 9211 292 229<a href="#" style="float:right;padding-right:25px">Profile</a></p>
-                        </div>
+                            <div class="col-6" style="background:#fff;box-shadow: 5px 5px 5px #d9d9d9;font-size:13px;margin-bottom:15px;border-right:12px solid #bebebe">
+                                <img src="img/bg.svg" alt="" style="height:100px;width:100px;float:left;border-radius:5px;margin-top:8px;margin-right:10px;margin-left:40px">
+                                <h6 style="padding-top:10px">
+                                    <?php echo $emp['fname']. ' ' .$emp['other_names']. ' ' .$emp['surname'] ?>
+                                </h6>
+                                <p>
+                                    IT Officer<br>
+                                    <span style="border-left:5px solid orange;padding-left:10px">Department ICT, Division Headquarters</span><br>
+                                    <img src="img/email.png" alt="" style="width:20px;height:20px"> <?php echo $emp['email'] ?><br>
+                                    <img src="img/phones.png" alt="" style="width:20px;height:20px"> <?php echo $emp['phone_no'] ?>
+                                    <a href="#" style="float:right;padding-right:25px">View</a>
+                                </p>
+                            </div>
+
+                        <?php endforeach ?>
+
                     </div>
 
                 </div>
                 <div style="text-align:center;font-size:14px;color:#666666;margin:20px 0">
-                    <a href=""><img src="img/backward.png" alt="" style="height:20px"></a>1 / 25<a href=""><img src="img/forward.png" alt="" style="height:20px"></a>
+
+                    <ul class="pagination">
+                        <li><a href="?division=corporate_service&section=csd-employees&?page=1">First</a></li>
+                        <li class="<?php if ($page <=1) { echo 'disabled'; } ?>">
+                            <a href="<?php if($page <=1){ echo "?division=corporate_service&section=csd-employees&?page=".($page - 1); } else { echo '#'; } ?>">Prev</a>
+                        </li>
+                        
+                        <li class="<?php if ($page >= $total_pages) { echo 'disabled'; } ?>">
+                            <a href="<?php if($page <= $total_pages){ echo "?division=corporate_service&section=csd-employees&?page=".($page + 1); } else { echo "#"; } ?>">Next</a>
+                        </li>
+                        <li><a href="?division=corporate_service&section=csd-employees&?page=<?php echo $total_pages; ?>">Last</a></li>
+                    </ul>
+
                 </div>
             </div>
         </div>
 
-    <?php elseif (action == 'employee-form'): ?>
+    <?php elseif (action == 'add-employee'): ?>
 
         <div class="col-10">
             <div class="row">
@@ -156,39 +201,39 @@
                             <h5 style="font-weight:bold;padding-left:700px;color:#707070">F-SFT-007-E</h5>
                         </div>
                     
-                        <form action="connection/signup.inc.php" method="post">
+                        <form action="includes/add_employee.inc.php" method="POST">
                             <div class="row">
                                 <h4 class="admin-header">1.a. Personal Details</h4>
                                 <h6 class="" style="padding-bottom:20px">Please make sure you review the information entered below before submitting.</h6>
 
                                 <div class="form-group col-6">
                                     <label for="">Surname</label>
-                                    <input type="text" class="form-control" placeholder="Enter surname" name="fname"/>
+                                    <input type="text" class="form-control" placeholder="Enter surname" name="surname"/>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">First Name</label>
-                                    <input type="text" class="form-control" placeholder="Enter first name" name="lname"/>
+                                    <input type="text" class="form-control" placeholder="Enter first name" name="fname"/>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Other Names (in full)</label>
-                                            <input type="text" class="form-control" placeholder="Enter other names" name="lname"/>
+                                            <input type="text" class="form-control" placeholder="Enter other names" name="othernames"/>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Gender</label>
-                                    <select class="form-select" aria-label="">
+                                    <select class="form-select" aria-label="" name="gender">
                                         <option selected>Select Gender</option>
                                         <option value="male">Male</option>
                                         <option value="female">Female</option>
-                                        <option value="others">Others</option>
+                                        <!-- <option value="others">Others</option> -->
                                     </select>
                                 </div>
                                 <div class="col-6 md-form md-outline input-with-post-icon datepicker">
-                                    <label for="example">Date of Birth</label>
-                                    <input placeholder="Select date" type="date" id="example" class="form-control" style="color:#707070">
+                                    <label for="dob">Date of Birth</label>
+                                    <input placeholder="Select date" type="date" name="dob" id="dob" class="form-control" style="color:#707070">
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Marital Status</label>
-                                    <select class="form-select" aria-label="">
+                                    <select class="form-select" aria-label="" name="marital_status">
                                         <option selected>Select Status</option>
                                         <option value="single">Single</option>
                                         <option value="married">Married</option>
@@ -198,7 +243,7 @@
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Postal Address</label>
-                                    <input type="text" class="form-control" placeholder="e.g. Munuki 107, Juba City" name="fname"/>
+                                    <input type="text" class="form-control" placeholder="e.g. Munuki 107, Juba City" name="postal_address"/>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Tel. No.</label>
@@ -210,7 +255,7 @@
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">State</label>
-                                    <select class="form-select" aria-label="">
+                                    <select class="form-select" aria-label="" name="state">
                                         <option selected>Select State</option>
                                         <option value="central">Central Equatoria</option>
                                         <option value="eastern">Eastern Equatoria</option>
@@ -218,12 +263,13 @@
                                         <option value="jonglei">Jonglei State</option>
                                         <option value="lakes">Lakes State</option>
                                         <option value="warap">Warap State</option>
+                                        <option value="unity">Unity State</option>
                                     </select>                  
                                 </div>
 
                                 <div class="form-group col-6">
                                     <label for="">Domicile/Place of Origin</label>
-                                    <select class="form-select" aria-label="">
+                                    <select class="form-select" aria-label="" name="poo">
                                         <option selected>Select City</option>
                                         <option value="single">Juba</option>
                                         <option value="married">Wau</option>
@@ -241,28 +287,28 @@
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Payroll Number</label>
-                                    <input type="text" class="form-control" placeholder="Payroll number" name="email"/>
+                                    <input type="text" class="form-control" placeholder="Payroll number" name="payroll_no"/>
                                 </div>
 
                                 <h4 class="admin-header">b. Spouse Details</h4>
                                 <div class="form-group col-6">
                                     <label for="">Full Name</label>
-                                    <input type="text" class="form-control" placeholder="Enter full name" name="lname"/>
+                                    <input type="text" class="form-control" placeholder="Enter full name" name="kin_fullname"/>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Postal Address</label>
-                                    <input type="text" class="form-control" placeholder="e.g. Munuki 107, Juba City" name="fname"/>
+                                    <input type="text" class="form-control" placeholder="e.g. Munuki 107, Juba City" name="kin_address"/>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Tel. No.</label>
-                                    <input type="text" class="form-control" placeholder="9xxxxxxxx" name="phone"/>
+                                    <input type="text" class="form-control" placeholder="9xxxxxxxx" name="kin_phone"/>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Email</label>
-                                    <input type="text" class="form-control" placeholder="you@gmail.com" name="email"/>
+                                    <input type="text" class="form-control" placeholder="you@gmail.com" name="kin_email"/>
                                 </div>
                             </div>
-                            <input type="submit" class="verify-btn" name="submit" value="Submit"/>
+                            <input type="submit" class="verify-btn" name="submit_employee" value="Submit"/>
                             <p class="privacy-policy">By Submitting Account, you accepted NRA <a href="">Terms of Use</a></p>
                         </form>
                     </div>

@@ -2,15 +2,15 @@
 
     if(isset($_POST['submit'])){ 
         
-        include("config.php"); 
+        include_once "config.php"; 
 
-        $fname = mysqli_real_escape_string($conn, $_POST['fname']);
-        $lname = mysqli_real_escape_string($conn, $_POST['lname']);
-        $email = mysqli_real_escape_string($conn, $_POST['email']);
-        $username = mysqli_real_escape_string($conn, $_POST['username']);
-        $passcode = mysqli_real_escape_string($conn, $_POST['passcode']);
+        $fname     = mysqli_real_escape_string($conn, $_POST['fname']);
+        $lname     = mysqli_real_escape_string($conn, $_POST['lname']);
+        $email     = mysqli_real_escape_string($conn, $_POST['email']);
+        $username  = mysqli_real_escape_string($conn, $_POST['username']);
+        $passcode  = mysqli_real_escape_string($conn, $_POST['passcode']);
         $cpassword = mysqli_real_escape_string($conn, $_POST['cpassword']);
-        $division = mysqli_real_escape_string($conn, $_POST['division']);
+        $division  = mysqli_real_escape_string($conn, $_POST['division']);
 
         if(empty($fname) || empty($lname) || empty($email) || empty($division) || empty($passcode) || empty($cpassword)) {
             header("Location: ../register.php?q=emptyfields");
