@@ -4,28 +4,17 @@
 // error_reporting(-1);
 
     include 'layout.php';
-    include 'includes/config.php';
+    include 'includes/functions.php';
 
-    if (isset($_GET['page'])) {
-        $page = $_GET['page'];
-    } else {
-        $page = 1;
-    }
-
-    $records_per_page = 10;
-    $offset = ($page-1) * $records_per_page;
-
-    $total_pages_sql = "SELECT COUNT(*) FROM tbl_employees";
-    $result = mysqli_query($conn, $total_pages_sql);
-    $rows = mysqli_fetch_array($result)[0];
-    $total_pages = ceil($rows / $records_per_page);
-
-    $sql = "SELECT * FROM tbl_employees LIMIT $offset, $records_per_page";
-    $employees = mysqli_query($conn, $sql);
+    $employees = fetchEmployees();
+    $depts = getDepartments();
+    $totalEmps = CountTotalEmployees();
+    $departments = countTotalDepts();
 
 ?>
 
 <?php if (section == ''): ?>
+
 
     <div class="col-10">
         <div class="row">
@@ -37,12 +26,12 @@
             </div>
             <div class="col-3" style="background-color:rgb(175, 44, 70);width:23%;height:100px; border-radius:5px;margin-left:14px">
                 <img src="img/dp.png" alt="" id="dash-icon">
-                <h3 style="color:#fff;padding-top:20px;font-weight:bold">15</h3>
+                <h3 style="color:#fff;padding-top:20px;font-weight:bold"><?php echo $departments['departments'] ?></h3>
                 <h6 style="color:#fff;padding-top:10px">Departments</h6>
             </div>
             <div class="col-3" style="background-color:rgb(238, 171, 26);width:23%;height:100px; border-radius:5px;margin-left:14px">
                 <img src="img/staf.png" alt="" id="dash-icon">
-                <h3 style="color:#fff;padding-top:20px;font-weight:bold">184</h3>
+                <h3 style="color:#fff;padding-top:20px;font-weight:bold"><?php echo $totalEmps['employees'] ?></h3>
                 <h6 style="color:#fff;padding-top:10px">Employees</h6>
             </div>
             <div class="col-3" style="background-color:rgb(75, 155, 75);width:23%;height:100px; border-radius:5px;margin-left:14px">
@@ -71,65 +60,162 @@
 
 <?php elseif (section == 'csd-departments'): ?>
 
-    <div class="col-10">
-        <div class="row">
-            <div class="col-12">
-                <form action="" method="POST">
-                    <div class="col-md-4" style="float: right; margin-top:10px">
-                        <input type="text" name="search" class="form-control" placeholder="Search department by name" style="font-size:13px;border-radius:50px">
+    <?php if (action == ''): ?>
+
+        <div class="col-10">
+            <div class="row">
+                <div class="col-12">
+                    <form action="" method="POST">
+                        <div class="col-md-4" style="float: right; margin-top:10px">
+                            <input type="text" name="search" class="form-control" placeholder="Search department by name" style="font-size:13px;border-radius:50px">
+                        </div>
+                    </form>
+
+                    <div class="add-btn">
+                        <button class="enquire-btn" data-bs-toggle="modal" data-bs-target="#enquire1" style="padding:5px 50px;border:none;background:rgb(24, 133, 184);border-radius:3px;color:#fff;margin:10px 90px">Add</button>
                     </div>
-                </form>
 
-                <div class="add-btn">
-                    <button class="enquire-btn" data-bs-toggle="modal" data-bs-target="#enquire1" style="padding:5px 50px;border:none;background:rgb(24, 133, 184);border-radius:3px;color:#fff;margin:10px 90px">Add</button>
-                </div>
-
-                <div class="modal fade" id="enquire1" tabindex="-1" aria-labelledby="enquireLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <p class="modal-title text-dark" id="enquireLabel">Add new department by filling the form below.</p>
-                                <button type="submit" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form action="connection/csd-add-dept.inc.php" method="post">
-                                    <input type="text" name="dept_name" class="form-control" placeholder="Department Name"><br>
-                                    <input type="text" name="dept_id" class="form-control" placeholder="Department Code"><br>
-                                    <input type="text" name="hod_title" class="form-control" placeholder="HOD Title"><br>
-                                    <input type="text" name="no_staff" class="form-control" placeholder="No. of Staff"><br>
-                                    <input type="submit" class="verify-btn" name="submit" value="Submit"/>
-                                </form>
+                    <div class="modal fade" id="enquire1" tabindex="-1" aria-labelledby="enquireLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <p class="modal-title text-dark" id="enquireLabel">Add new department by filling the form below.</p>
+                                    <button type="submit" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="includes/add_department.inc.php" method="POST">
+                                        <div class="form-group">
+                                            <label for="dept_name">Department Name</label>
+                                            <input type="text" name="dept_name" class="form-control" placeholder="Department Name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="dept_id">Department Code</label>
+                                            <input type="text" name="dept_id" class="form-control" placeholder="Department Code">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="hod_title">HOD Title</label>
+                                            <input type="text" name="hod_title" class="form-control" placeholder="HOD Title">
+                                        </div>
+                                        <input type="submit" class="verify-btn" name="submit" value="Add"/>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <table class="table table-hover">
-                    <thead>
-                        <tr style="font-size:13px">
-                        <th>#</th>
-                        <th>Department-Name</th>
-                        <th>Code</th>
-                        <th>HOD-Title</th>
-                        <th>No. of Staff</th>
-                        <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style="font-size:13px">
-                            <td>1</td>
-                            <td>Name Here</td>
-                            <td>Dept ID</td>
-                            <td>HOD <Title></Title></td>
-                            <td style="text-align:center">No. of staff</td>
-                            <td><a href="#" class="action-link"><a href="human-resource.php" class="action-link text-primary">View</a></td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr style="font-size:13px">
+                                <th>#</th>
+                                <th>Department Name</th>
+                                <th>Department Code</th>
+                                <th>Head Of Department</th>
+                                <th>No. of Staff</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <?php $count = 1; ?>
+
+                            <?php foreach ($depts as $dept): ?>
+
+                                <tr style="font-size:13px">
+                                    <td><?php echo $count++ ?></td>
+                                    <td><?php echo $dept['dept_name'] ?></td>
+                                    <td><?php echo $dept['dept_code'] ?></td>
+                                    <td><?php echo $dept['hod'] ?></td>
+                                    <td style="text-align:center">No. of staff</td>
+                                    <td>
+                                        <a href="index.php?division=corporate_service&section=csd-departments&action=edit-department&id=<?php echo $dept['id'] ?>" class="action-link btn btn-sm btn-outline-success">Edit</a>
+                                        <a href="index.php?division=corporate_service&section=csd-departments&action=delete-department&id=<?php echo $dept['id'] ?>" class="action-link btn btn-sm btn-outline-danger">Delete</a>
+                                    </td>
+                                </tr>
+
+                            <?php endforeach ?>
+
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
+
+    <?php elseif (action == 'edit-department'): ?>
+
+        <?php 
+
+            $id = $_GET['id'];
+            $sql = "SELECT * FROM tbl_departments WHERE id = '$id'";
+            $result = mysqli_query($conn, $sql);
+            $data = mysqli_fetch_assoc($result);
+
+            if (isset($_POST['save'])) {
+                $name = mysqli_real_escape_string($conn, $_POST['dept_name']);
+                $dept_code = mysqli_real_escape_string($conn, $_POST['dept_id']);
+                $hod = mysqli_real_escape_string($conn, $_POST['hod_title']);
+
+                $sql = "UPDATE `tbl_departments` SET `dept_name`='$name', `dept_code`='$dept_code', `hod`='$hod' WHERE `id` = '$id'";
+                mysqli_query($conn, $sql);
+
+
+                header("Location: index.php?division=corporate_service&section=csd-departments&q=success");
+                exit();
+            }
+            
+            
+        ?>
+
+        <div class="col-6">
+            <div class="row">
+                <div class="container">
+                    <div class="appointment-form">
+                        <div class="row" style="font-weight:bold;">
+                            <h2 style="font-weight:bold;color:#707070;margin-bottom:40px;">Edit Department</h2>
+                        </div>
+                    
+                        <form action="" method="POST">
+                            <div class="row">
+
+                                <div class="form-group">
+                                    <label for="dept_name">Department Name</label>
+                                    <input type="text" name="dept_name" class="form-control" value="<?php echo $data['dept_name']; ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label for="dept_id">Department Code</label>
+                                    <input type="text" name="dept_id" class="form-control" value="<?php echo $data['dept_code']; ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label for="hod_title">HOD Title</label>
+                                    <input type="text" name="hod_title" class="form-control" value="<?php echo $data['hod']; ?>">
+                                </div>
+                            </div>
+                            <input type="submit" class="verify-btn" name="save" value="Save Changes"/>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    <?php elseif (action == 'delete-department'): ?>
+
+        <?php
+        
+            if (isset($_GET['id'])) {
+                $id = $_GET['id'];
+                $sql = "DELETE FROM `tbl_departments` WHERE `id` = '$id'";
+                mysqli_query($conn, $sql);
+
+                header("Location: index.php?division=corporate_service&section=csd-departments&q=success");
+                exit();
+            } else {
+                header("Location: index.php?division=corporate_service&section=csd-departments&q=success");
+                exit();
+            }
+        
+        ?>
+
+    <?php endif ?>
 
 <?php elseif (section == 'csd-employees'): ?>
 
@@ -163,7 +249,7 @@
                                     <span style="border-left:5px solid orange;padding-left:10px">Department ICT, Division Headquarters</span><br>
                                     <img src="img/email.png" alt="" style="width:20px;height:20px"> <?php echo $emp['email'] ?><br>
                                     <img src="img/phones.png" alt="" style="width:20px;height:20px"> <?php echo $emp['phone_no'] ?>
-                                    <a href="#" style="float:right;padding-right:25px">View</a>
+                                    <a href="index.php?division=corporate_service&section=csd-employees&action=view&id=<?php echo $emp['id'] ?>" style="float:right;padding-right:25px">View</a>
                                 </p>
                             </div>
 
@@ -316,10 +402,71 @@
             </div>
         </div>
 
+
+    <?php elseif (action == 'view'): ?>
+
+        <?php
+            
+            if (isset($_GET['id'])) {
+                $id = $_GET['id'];
+                $sql = "SELECT * FROM `tbl_employees` WHERE `id` = '$id'";
+                $result = mysqli_query($conn, $sql);
+                $data = mysqli_fetch_assoc($result);
+            }
+            
+        ?>
+
+        <div class="col-10">
+            <div class="row">
+                
+                <div class="col-12">
+                    <div class="container">
+                        <form action="" method="POST">
+                            <div class="col-md-4" style="float: right; margin-top:10px">
+                                <input type="text" name="search" class="form-control" placeholder="Search department by name" style="font-size:13px;border-radius:50px">
+                            </div>
+                        </form>
+
+                        <div class="add-btn">
+                            <h4 class="pt-3">Human Resource</h4>
+                        </div>
+
+                        <p class="pt-3 pb-3 mb-5">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nostrum officiis, eveniet nulla hic iure voluptate! Reiciendis distinctio nulla assumenda quam temporibus sunt obcaecati saepe alias totam quo! Minima, harum modi.</p>
+                        <div class="row">
+                            <div class="col">
+                                <button class="dept-info1">Division<br>Corporate Service</button>
+                            </div>
+                            <div class="col">
+                                <button class="dept-info2">Department Code<br>CSD-105</button>
+                            </div>
+                            <div class="col">
+                                <button class="dept-info3">Number of Staff<br>7</button>
+                            </div>
+                            <div class="col">
+                                <button class="dept-info4">Head of Department Title<br>Assistant Commissioner for Human Resource</button>
+                            </div>
+                        </div>
+                        
+                        <h5 style="padding:20px 0">Employee's Details</h5>
+
+                        <div class="card" style="width: 25rem;">
+                            <img class="card-img-top" src="img/admin.jpg" alt="Card image cap">
+                            <div class="card-body">
+                                <p class="card-text">Employee Name: <?php echo $data['fname']. ' ' .$data['other_names']. ' ' .$data['surname'] ?></p>
+                                <p class="card-text">Title: Assistant Commissioner for Human Resource</p>
+                                <p class="card-text">Email: <?php echo $data['email'] ?></p>
+                                <p class="card-text">Tel: <?php echo $data['phone'] ?></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     <?php endif ?>
 
 
-    <?php elseif (section == 'csd-payroll'): ?>
+<?php elseif (section == 'csd-payroll'): ?>
 
     <div class="col-10">
         <div class="row">
@@ -438,6 +585,33 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+<?php elseif (section == 'calendar'): ?>
+
+    <div class="col-10">
+        <div class="row">
+            <div class = "admin" >
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+
+<?php elseif (section == 'leaves'): ?>
+
+    <div class="col-10">
+        <div class="row">
+        <div class="col-12">
+
+            <form action="" method="POST">
+                <div class="col-md-4" style="float: right; margin-top:10px">
+                    <input type="text" name="search" class="form-control" placeholder="Search by name" style="font-size:13px;border-radius:50px">
+                </div>
+            </form>
+
+            <h2 class="text-center">Coming Soon!</h2>
+            
         </div>
     </div>
 

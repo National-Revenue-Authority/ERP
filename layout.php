@@ -1,6 +1,6 @@
 <?php 
 
-$requests = ['section', 'division', 'action'];
+$requests = ['section', 'division', 'action', 'role'];
 
 foreach ($requests as $req) {
     if (isset($_GET[$req])) {
@@ -48,7 +48,9 @@ else {
 
 <body>
     <header class="header-bg">
-        <a href="index.php?division=<?php echo(base64_decode($_COOKIE['division']))?>"><img src="assets/img/nralogo.svg" class="navbar-logo" alt=""></a>
+        <a href="index.php?division=<?php echo(base64_decode($_COOKIE['division']))?>">
+            <img src="assets/img/nralogo.svg" class="navbar-logo" alt="">
+        </a>
         <nav>   
             <ul class="nav-links">
                 <li>Hello, <?php echo(base64_decode($_COOKIE['username']))?></li>
@@ -77,8 +79,8 @@ else {
                     <li><a href=''><img src="assets/img/inv.png" alt="" id="btn-icon"> Divisions</a></li>
                     <li><a href='index.php?division=corporate_service&section=csd-departments'><img src="assets/img/deptm.png" alt="" id="btn-icon"> Departments</a></li>
                     <li><a href='index.php?division=corporate_service&section=csd-employees'><img src="assets/img/staf.png" alt="" id="btn-icon"> Employees</a></li>
-                    <li><a href='#'><img src="img/dash.png" alt="" id="btn-icon"> Leaves</a></li>
-                    <li><a href='#'><img src="img/inv.png" alt="" id="btn-icon"> Calender</a></li><br><br>
+                    <li><a href='index.php?division=corporate_service&section=leaves'><img src="img/dash.png" alt="" id="btn-icon"> Leaves</a></li>
+                    <li><a href='index.php?division=corporate_service&section=calendar'><img src="img/inv.png" alt="" id="btn-icon"> Calender</a></li><br><br>
                     <p style="color:#ccc;font-weight:bold;font-size:13px">EXTRA SERVICES</p>
                     <li><a href='index.php?division=corporate_service&section=attendance'><img src="img/staf.png" alt="" id="btn-icon"> Attendence</a></li>
                     <li><a href='index.php?division=corporate_service&section=csd-payroll'><img src="img/repo.png" alt="" id="btn-icon"> Payroll</a></li><br>

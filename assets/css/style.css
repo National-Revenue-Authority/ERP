@@ -1,5 +1,7 @@
 body{
 	height:100%;
+	font-family: serif;
+	font-size: 18px;
 }
 div#main {
     position: fixed;
