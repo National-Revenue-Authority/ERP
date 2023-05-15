@@ -17,25 +17,26 @@
 
 
     <div class="col-10">
+
         <div class="row">
             <h6 style="color: #909090;padding-top:20px"> DASHBOARD</h6>
             <div class="col-3" style="background-color:rgb(24, 133, 184);width:23%;height:100px; border-radius:5px;margin-left:14px">
-                <img src="img/sqr.png" alt="" id="dash-icon">
+                <img src="assets/img/bag.png" alt="" id="dash-icon">
                 <h3 style="color:#fff;padding-top:20px;font-weight:bold">5</h3>
                 <h6 style="color:#fff;padding-top:10px">Divisions</h6>
             </div>
             <div class="col-3" style="background-color:rgb(175, 44, 70);width:23%;height:100px; border-radius:5px;margin-left:14px">
-                <img src="img/dp.png" alt="" id="dash-icon">
+                <img src="assets/img/dp.png" alt="" id="dash-icon">
                 <h3 style="color:#fff;padding-top:20px;font-weight:bold"><?php echo $departments['departments'] ?></h3>
                 <h6 style="color:#fff;padding-top:10px">Departments</h6>
             </div>
             <div class="col-3" style="background-color:rgb(238, 171, 26);width:23%;height:100px; border-radius:5px;margin-left:14px">
-                <img src="img/staf.png" alt="" id="dash-icon">
+                <img src="assets/img/staf.png" alt="" id="dash-icon">
                 <h3 style="color:#fff;padding-top:20px;font-weight:bold"><?php echo $totalEmps['employees'] ?></h3>
                 <h6 style="color:#fff;padding-top:10px">Employees</h6>
             </div>
             <div class="col-3" style="background-color:rgb(75, 155, 75);width:23%;height:100px; border-radius:5px;margin-left:14px">
-                <img src="img/ss.png" alt="" id="dash-icon">
+                <img src="assets/img/2ss.png" alt="" id="dash-icon">
                 <h3 style="color:#fff;padding-top:20px;font-weight:bold">7</h3>
                 <h6 style="color:#fff;padding-top:10px">Leaves</h6>
             </div>
@@ -65,6 +66,7 @@
         <div class="col-10">
             <div class="row">
                 <div class="col-12">
+
                     <form action="" method="POST">
                         <div class="col-md-4" style="float: right; margin-top:10px">
                             <input type="text" name="search" class="form-control" placeholder="Search department by name" style="font-size:13px;border-radius:50px">
@@ -136,6 +138,56 @@
 
                         </tbody>
                     </table>
+
+                    <?php 
+
+                        $fullUrl = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+
+                        if (strpos($fullUrl, "q=success") == true) {
+                            echo "
+                                <div class='alert alert-success account-dialog' role='alert'>
+                                Department edited successfully
+                                </div>
+                            ";
+                            exit();
+                        } elseif (strpos($fullUrl, "d=success") == true) {
+                            echo "
+                                <div class='alert alert-success account-dialog' role='alert'>
+                                Department deleted!
+                                </div>
+                            ";
+                            exit();
+                        } elseif (strpos($fullUrl, "d=error") == true) {
+                            echo "
+                                <div class='alert alert-warning account-dialog' role='alert'>
+                                An error occured, please try again!
+                                </div>
+                            ";
+                            exit();
+                        } elseif (strpos($fullUrl, "dpt=empty") == true) {
+                            echo "
+                                <div class='alert alert-warning account-dialog' role='alert'>
+                                Empty fields, please try again!
+                                </div>
+                            ";
+                            exit();
+                        } elseif (strpos($fullUrl, "dpt=exists") == true) {
+                            echo "
+                                <div class='alert alert-warning account-dialog' role='alert'>
+                                Department already exists!
+                                </div>
+                            ";
+                            exit();
+                        } elseif (strpos($fullUrl, "dpt=success") == true) {
+                            echo "
+                                <div class='alert alert-success account-dialog' role='alert'>
+                                Department added successfully. 
+                                </div>
+                            ";
+                            exit();
+                        }
+                    ?>
+
                 </div>
             </div>
         </div>
@@ -157,10 +209,9 @@
                 $sql = "UPDATE `tbl_departments` SET `dept_name`='$name', `dept_code`='$dept_code', `hod`='$hod' WHERE `id` = '$id'";
                 mysqli_query($conn, $sql);
 
+                echo "<script>window.location = 'index.php?division=corporate_service&section=csd-departments&q=success'</script>";
 
-                header("Location: index.php?division=corporate_service&section=csd-departments&q=success");
-                exit();
-            }
+            } 
             
             
         ?>
@@ -196,7 +247,6 @@
             </div>
         </div>
 
-
     <?php elseif (action == 'delete-department'): ?>
 
         <?php
@@ -206,14 +256,108 @@
                 $sql = "DELETE FROM `tbl_departments` WHERE `id` = '$id'";
                 mysqli_query($conn, $sql);
 
-                header("Location: index.php?division=corporate_service&section=csd-departments&q=success");
-                exit();
+                echo "<script>window.location = 'index.php?division=corporate_service&section=csd-departments&d=success'</script>";
             } else {
-                header("Location: index.php?division=corporate_service&section=csd-departments&q=success");
-                exit();
+                echo "<script>window.location = 'index.php?division=corporate_service&section=csd-departments&d=error'</script>";
             }
         
         ?>
+
+    <?php elseif (action == 'search-department'): ?>
+
+        <?php 
+
+            if (isset($_POST['search'])) {
+                
+                $search = mysqli_real_escape_string($conn, $_POST['search']);
+
+                $sql = "SELECT * FROM `tbl_departments` WHERE `dept_name` LIKE \'$search\' OR `dept_code` LIKE \'$search\' OR `hod` LIKE \'$search\'";
+                $searchResults = mysqli_query($conn, $sql);
+
+            }
+
+        ?>
+
+        <div class="col-10">
+            <div class="row">
+                <div class="col-12">
+
+                    <form action="index.php?division=corporate_service&section=csd-departments&action=search-department" method="POST">
+                        <div class="col-md-4" style="float: right; margin-top:10px">
+                            <input type="text" name="search" class="form-control" placeholder="Search department by name" style="font-size:13px;border-radius:50px">
+                        </div>
+                    </form>
+
+                    <div class="add-btn">
+                        <button class="enquire-btn" data-bs-toggle="modal" data-bs-target="#enquire1" style="padding:5px 50px;border:none;background:rgb(24, 133, 184);border-radius:3px;color:#fff;margin:10px 90px">Add</button>
+                    </div>
+
+                    <div class="modal fade" id="enquire1" tabindex="-1" aria-labelledby="enquireLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <p class="modal-title text-dark" id="enquireLabel">Add new department by filling the form below.</p>
+                                    <button type="submit" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="includes/add_department.inc.php" method="POST">
+                                        <div class="form-group">
+                                            <label for="dept_name">Department Name</label>
+                                            <input type="text" name="dept_name" class="form-control" placeholder="Department Name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="dept_id">Department Code</label>
+                                            <input type="text" name="dept_id" class="form-control" placeholder="Department Code">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="hod_title">HOD Title</label>
+                                            <input type="text" name="hod_title" class="form-control" placeholder="HOD Title">
+                                        </div>
+                                        <input type="submit" class="verify-btn" name="submit" value="Add"/>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table table-hover">
+                        <thead>
+                            <tr style="font-size:13px">
+                                <th>#</th>
+                                <th>Department Name</th>
+                                <th>Department Code</th>
+                                <th>Head Of Department</th>
+                                <th>No. of Staff</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <?php $count = 1; ?>
+
+                            <?php foreach ($searchResults as $search): ?>
+
+                                <tr style="font-size:13px">
+                                    <td><?php echo $count++ ?></td>
+                                    <td><?php echo $search['dept_name'] ?></td>
+                                    <td><?php echo $search['dept_code'] ?></td>
+                                    <td><?php echo $search['hod'] ?></td>
+                                    <td style="text-align:center">No. of staff</td>
+                                    <td>
+                                        <a href="index.php?division=corporate_service&section=csd-departments&action=edit-department&id=<?php echo $search['id'] ?>" class="action-link btn btn-sm btn-outline-success">Edit</a>
+                                        <a href="index.php?division=corporate_service&section=csd-departments&action=delete-department&id=<?php echo $search['id'] ?>" class="action-link btn btn-sm btn-outline-danger">Delete</a>
+                                    </td>
+                                </tr>
+
+                            <?php endforeach ?>
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+        
 
     <?php endif ?>
 
@@ -240,15 +384,15 @@
                         <?php foreach ($employees as $emp): ?>
 
                             <div class="col-6" style="background:#fff;box-shadow: 5px 5px 5px #d9d9d9;font-size:13px;margin-bottom:15px;border-right:12px solid #bebebe">
-                                <img src="img/bg.svg" alt="" style="height:100px;width:100px;float:left;border-radius:5px;margin-top:8px;margin-right:10px;margin-left:40px">
+                                <img src="assets/img/avatar.svg" alt="" style="height:100px;width:100px;float:left;border-radius:5px;margin-top:8px;margin-right:10px;margin-left:40px">
                                 <h6 style="padding-top:10px">
                                     <?php echo $emp['fname']. ' ' .$emp['other_names']. ' ' .$emp['surname'] ?>
                                 </h6>
                                 <p>
                                     IT Officer<br>
                                     <span style="border-left:5px solid orange;padding-left:10px">Department ICT, Division Headquarters</span><br>
-                                    <img src="img/email.png" alt="" style="width:20px;height:20px"> <?php echo $emp['email'] ?><br>
-                                    <img src="img/phones.png" alt="" style="width:20px;height:20px"> <?php echo $emp['phone_no'] ?>
+                                    <img src="assets/img/email.png" alt="" style="width:20px;height:20px"> <?php echo $emp['email'] ?><br>
+                                    <img src="assets/img/phones.png" alt="" style="width:20px;height:20px"> <?php echo $emp['phone_no'] ?>
                                     <a href="index.php?division=corporate_service&section=csd-employees&action=view&id=<?php echo $emp['id'] ?>" style="float:right;padding-right:25px">View</a>
                                 </p>
                             </div>
@@ -440,7 +584,7 @@
                                 <button class="dept-info2">Department Code<br>CSD-105</button>
                             </div>
                             <div class="col">
-                                <button class="dept-info3">Number of Staff<br>7</button>
+                                <button class="dept-info3">Number of Staff<br><?php echo $totalEmps['employees'] ?></button>
                             </div>
                             <div class="col">
                                 <button class="dept-info4">Head of Department Title<br>Assistant Commissioner for Human Resource</button>
@@ -450,12 +594,15 @@
                         <h5 style="padding:20px 0">Employee's Details</h5>
 
                         <div class="card" style="width: 25rem;">
-                            <img class="card-img-top" src="img/admin.jpg" alt="Card image cap">
+                            <img class="card-img-top rounded-circle" src="assets/img/avatar.svg" alt="Card image cap" height="300px">
+                            <!-- <form action="">
+                                <input type="file" name="profile" class="custom-file-control">
+                            </form> -->
                             <div class="card-body">
-                                <p class="card-text">Employee Name: <?php echo $data['fname']. ' ' .$data['other_names']. ' ' .$data['surname'] ?></p>
-                                <p class="card-text">Title: Assistant Commissioner for Human Resource</p>
+                                <p class="card-text">Name: <?php echo $data['fname']. ' ' .$data['other_names']. ' ' .$data['surname'] ?></p>
+                                <p class="card-text">Title: Assistant Finance Manager</p>
                                 <p class="card-text">Email: <?php echo $data['email'] ?></p>
-                                <p class="card-text">Tel: <?php echo $data['phone'] ?></p>
+                                <p class="card-text">Tel: <?php echo $data['phone_no'] ?></p>
                             </div>
                         </div>
                     </div>
@@ -464,7 +611,6 @@
         </div>
 
     <?php endif ?>
-
 
 <?php elseif (section == 'csd-payroll'): ?>
 

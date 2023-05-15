@@ -1,6 +1,6 @@
 	<footer class="text-center">
 		Copyright &copy National Revenue Authority - Republic of South Sudan <script>document.write(new Date().getFullYear())</script>. All Rights Reserved | 
-		<a href="">Privacy Policy.</a>  Powered By <a href="https://techstack.com.ss">Techstack.</a>
+		<a href="">Privacy Policy.</a>
 	</footer>
 
 	<script src="assets/calendar/calendar/moment.min.js"></script>

@@ -9,8 +9,7 @@ if (isset($_POST['submit'])) {
     $hod = mysqli_real_escape_string($conn, $_POST['hod_title']);
 
     if (empty($name) || empty($dept_code) || empty($hod)) {
-        header("Location: ../index.php?division=corporate_service&section=csd-departments&q=empty");
-        exit();
+        echo "<script>window.location = '../index.php?division=corporate_service&section=csd-departments&dpt=empty'</script>";
     } else {
         // Check if department already exists
         $sql = "SELECT * FROM tbl_departments WHERE dept_name = '$name' AND dept_code = '$dept_code' AND hod = '$hod'";
@@ -18,20 +17,17 @@ if (isset($_POST['submit'])) {
         $resultCheck = mysqli_num_rows($result);
 
         if ($resultCheck >= 1) {
-            header("Location: ../index.php?division=corporate_service&section=csd-departments&q=exists");
-            exit();
+            echo "<script>window.location = '../index.php?division=corporate_service&section=csd-departments&dpt=exists'</script>";
         } else {
             // Insert into DB
             $sql = "INSERT INTO `tbl_departments`(`dept_name`, `dept_code`, `hod`) VALUES ('$name', '$dept_code', '$hod')";
             mysqli_query($conn, $sql);
 
-            header("Location: ../index.php?division=corporate_service&section=csd-departments&q=success");
-            exit();
+            echo "<script>window.location = '../index.php?division=corporate_service&section=csd-departments&dpt=success'</script>";
 
         }
     }
 
 } else {
-    header("Location: ../index.php?division=corporate_service&section=csd-departments");
-    exit();
+    echo "<script>window.location = '../index.php?division=corporate_service&section=csd-departments'</script>";
 }
